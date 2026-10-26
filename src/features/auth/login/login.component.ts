@@ -17,6 +17,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
+  requiresMfa = signal(false);
   messageService = inject(MessageService);
   constructor(
     private fb: FormBuilder,
@@ -25,7 +26,8 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
+      mfa_code: ['']
     });
   }
 
@@ -34,15 +36,35 @@ export class LoginComponent {
       this.isLoading.set(true);
       this.errorMessage.set(null);
 
-      const credentials: LoginDTO = this.loginForm.value;
+      const raw = this.loginForm.value;
+      const credentials: LoginDTO = {
+        email: raw.email,
+        password: raw.password,
+        ...(this.requiresMfa() ? { mfa_code: raw.mfa_code } : {})
+      };
 
       this.loginService.login(credentials).subscribe({
-        next: () => {
+        next: (response) => {
           this.isLoading.set(false);
-          this.router.navigateByUrl('/panel');
+          if (!response.user.email_verified) {
+            this.router.navigateByUrl('/verify-email');
+          } else if (response.user.mechanical_workshop && !response.user.mfa_enabled) {
+            this.router.navigateByUrl('/mfa-setup');
+          } else if (response.user.mechanical_workshop) {
+            this.router.navigateByUrl('/panel');
+          } else {
+            this.router.navigateByUrl('/pricing');
+          }
         },
         error: (error) => {
           this.isLoading.set(false);
+          if (error?.error?.code === 'mfa_required') {
+            this.requiresMfa.set(true);
+            this.loginForm.get('mfa_code')?.setValidators([Validators.required]);
+            this.loginForm.get('mfa_code')?.updateValueAndValidity();
+            this.showErrorMessage('Ingresa el código de tu aplicación de autenticación o un código de recuperación.');
+            return;
+          }
           this.showErrorMessage('Error al iniciar sesión. Verifica tus credenciales.');
         }
       });
@@ -62,7 +84,12 @@ export class LoginComponent {
     const field = this.loginForm.get(fieldName);
     if (field?.touched && field?.errors) {
       if (field.errors['required']) {
-        return `${fieldName === 'email' ? 'El correo' : 'La contraseña'} es requerido`;
+        const labels: Record<string, string> = {
+          email: 'El correo',
+          password: 'La contraseña',
+          mfa_code: 'El código de seguridad'
+        };
+        return `${labels[fieldName]} es requerido`;
       }
       if (field.errors['email']) {
         return 'Formato de correo inválido';

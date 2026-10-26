@@ -1,6 +1,7 @@
 export interface LoginDTO {
     email: string;
     password: string;
+    mfa_code?: string;
 }
 
 export interface RegisterDTO {
@@ -8,5 +9,5 @@ export interface RegisterDTO {
     last_name: string;
     email: string;
     password: string;
-    type_user: number;
+    password_confirmation: string;
 }

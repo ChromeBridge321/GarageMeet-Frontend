@@ -9,6 +9,8 @@ import { guestGuard } from '../core/guards/guest.guard';
 import { authGuard } from '../core/guards/authGuard.guard';
 import { SubscriptionPlansComponent } from '../features/Client/SubscriptionPlans/SubscriptionPlans.component';
 import { MechanicalFormCreateComponent } from '../features/Client/mechanicalFormCreate/mechanicalFormCreate.component';
+import { VerifyEmailComponent } from '../features/auth/security/verify-email.component';
+import { MfaSetupComponent } from '../features/auth/security/mfa-setup.component';
 
 export const routes: Routes = [
   {
@@ -52,6 +54,16 @@ export const routes: Routes = [
   {
     path: 'register-workshop',
     component: MechanicalFormCreateComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'verify-email',
+    component: VerifyEmailComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'mfa-setup',
+    component: MfaSetupComponent,
     canActivate: [authGuard],
   },
 

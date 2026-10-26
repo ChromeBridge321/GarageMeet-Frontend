@@ -46,6 +46,20 @@
           </div>
         </div>
 
+        @if (requiresMfa()) {
+          <div class="auth-field">
+            <label for="mfa_code">Código de seguridad</label>
+            <input class="auth-input" type="text" id="mfa_code" formControlName="mfa_code"
+              inputmode="numeric" autocomplete="one-time-code" placeholder="Código de 6 dígitos o recuperación"
+              [attr.aria-invalid]="getFieldError('mfa_code') ? 'true' : null">
+            <div class="auth-field-message" aria-live="polite">
+              @if (getFieldError('mfa_code')) {
+                <p class="auth-field-error" role="alert">{{ getFieldError('mfa_code') }}</p>
+              }
+            </div>
+          </div>
+        }
+
         <div class="auth-inline">
           <label class="auth-check">
             <input type="checkbox" aria-label="Recordarme en este dispositivo">

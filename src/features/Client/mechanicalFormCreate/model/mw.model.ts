@@ -1,5 +1,4 @@
 export interface MechanicalCreate {
-  users_id: number;
   municipality_id: number;
   cellphone_number: string;
   name: string;

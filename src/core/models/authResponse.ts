@@ -5,9 +5,12 @@ export interface AuthResponse {
     user: user;
 }
 
-interface user {
+export interface user {
     id: number;
+    users_id: number;
     email: string;
+    email_verified: boolean;
+    mfa_enabled: boolean;
     type_user: string | null;
     name: string;
     last_name: string;
@@ -16,7 +19,7 @@ interface user {
 
 }
 
-interface mechanical_workshop {
+export interface mechanical_workshop {
     id: number;
     users_id: number;
     municipality_id: number;

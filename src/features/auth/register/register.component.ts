@@ -27,9 +27,12 @@ export class RegisterComponent {
       name: ['', [Validators.required, Validators.minLength(2)]],
       last_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      type_user: [2] // Default value of 2 as shown in the API example
+      password: ['', [
+        Validators.required,
+        Validators.minLength(12),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
+      ]],
+      confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -55,12 +58,15 @@ export class RegisterComponent {
       this.errorMessage.set(null);
 
       const { confirmPassword, ...userData } = this.registerForm.value;
-      const registerData: RegisterDTO = userData;
+      const registerData: RegisterDTO = {
+        ...userData,
+        password_confirmation: confirmPassword
+      };
 
       this.registerService.register(registerData).subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.router.navigateByUrl('/pricing');
+          this.router.navigateByUrl('/verify-email');
         },
         error: (error) => {
           this.isLoading.set(false);
@@ -102,6 +108,9 @@ export class RegisterComponent {
           return `La contraseña debe tener al menos ${minLength} caracteres`;
         }
         return `Debe tener al menos ${minLength} caracteres`;
+      }
+      if (field.errors['pattern'] && fieldName === 'password') {
+        return 'Usa mayúsculas, minúsculas y al menos un número';
       }
       if (field.errors['mismatch']) {
         return 'Las contraseñas no coinciden';

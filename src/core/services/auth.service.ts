@@ -1,6 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { AuthResponse } from '../models/authResponse';
-import { RouterLink } from '@angular/router';
+import { AuthResponse, user } from '../models/authResponse';
 import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
@@ -134,6 +133,13 @@ export class AuthService {
     if (response.user?.mechanical_workshop) {
       this.setSecureStorage('mechanicalWorkshopData', response.user.mechanical_workshop);
     }
+  }
+
+  updateCurrentUser(user: user): void {
+    const current = this.authState();
+    if (!current) return;
+
+    this.setAuthState({ ...current, user });
   }
 
 

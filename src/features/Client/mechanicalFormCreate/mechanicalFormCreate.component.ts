@@ -12,7 +12,6 @@ import { InputMask } from 'primeng/inputmask';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CreateMechanicalWorkshopService } from './services/createMechanicalWorkshop.service';
-import { UserService } from './services/user.service';
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
   query: string;
@@ -33,9 +32,7 @@ export class MechanicalFormCreateComponent implements OnInit {
   authservice = inject(AuthService);
   locationsService = inject(LocationsService);
   messageService = inject(MessageService);
-  userService = inject(UserService);
   mechanicalService = inject(CreateMechanicalWorkshopService);
-  users_id = this.authservice.getUserId();
   constructor(
     private fb: FormBuilder,
     private router: Router
@@ -43,7 +40,6 @@ export class MechanicalFormCreateComponent implements OnInit {
 
   ngOnInit() {
     this.mechanicalForm = this.fb.group({
-      users_id: [this.users_id],
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       cellphone_number: ['', [Validators.required, Validators.minLength(14), Validators.maxLength(14)]],
@@ -101,18 +97,7 @@ export class MechanicalFormCreateComponent implements OnInit {
         this.isLoading.set(false);
         this.showSuccessMessage('Taller creado exitosamente');
         this.showInfoMessage('Felicidades ya eres parte de nuestro equipo, que disfrutes tu experiencia con nosotros!!! 🎉🎉🎉');
-        this.mechanicalForm.reset();
-        this.selectedLocation = null;
-        this.userService.updateUserRol(1).subscribe({
-          next: () => {
-            setTimeout(() => {
-              this.isLoading.set(false);
-              // Redireccionar o mostrar mensaje de éxito
-              this.authservice.logout();
-              this.router.navigate(['/login']);
-            }, 3000);
-          }
-        });
+        this.router.navigate(['/mfa-setup']);
       },
       error: (err) => {
         this.isLoading.set(false);

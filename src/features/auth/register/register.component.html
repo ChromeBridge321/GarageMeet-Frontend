@@ -67,7 +67,7 @@
           <div class="auth-field">
             <label for="password">Contraseña</label>
             <input class="auth-input" type="password" id="password" formControlName="password"
-              autocomplete="new-password" placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password" placeholder="12+ caracteres, mayúscula y número"
               [attr.aria-invalid]="getFieldError('password') ? 'true' : null"
               [attr.aria-describedby]="getFieldError('password') ? 'password-error' : null">
             <div class="auth-field-message" aria-live="polite">

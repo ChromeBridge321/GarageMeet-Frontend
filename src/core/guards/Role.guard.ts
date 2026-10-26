@@ -14,16 +14,8 @@ export const roleGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
-  // Obtener el tipo de usuario
-  const userType = authService.getUserType();
-
-  // Obtener los roles permitidos de la configuración de la ruta
-  const allowedRoles = route.data?.['roles'] || ['Admin'];
-
-  // Verificar si el usuario tiene uno de los roles permitidos
-  if (!userType || !allowedRoles.includes(userType)) {
-    // Redirigir a una página de acceso denegado o a la página principal
-    router.navigate(['/']);
+  if (!authService.hasMechanicalWorkshop()) {
+    router.navigate(['/register-workshop']);
     return false;
   }
 
